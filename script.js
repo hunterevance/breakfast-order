@@ -71,8 +71,6 @@ function checkout() {
     renderCart();
 }
 
-renderMenu();
-
 const toggleCartBtn = document.getElementById("toggleCartBtn");
 const cartPanel = document.getElementById("cartPanel");
 
@@ -82,3 +80,5 @@ cartPanel.classList.remove("open");
 toggleCartBtn.addEventListener("click", () => {
     cartPanel.classList.toggle("open");
 });
+
+renderMenu();
