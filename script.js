@@ -62,7 +62,7 @@ function renderCart() {
         total += item.price * item.qty;
     });
 
-    document.getElementById("total").textContent = `總金額: $${total}`;
+    document.getElementById("totalAmount").textContent = `總金額: $${total}`;
 }
 
 function checkout() {
@@ -72,3 +72,13 @@ function checkout() {
 }
 
 renderMenu();
+
+const toggleCartBtn = document.getElementById("toggleCartBtn");
+const cartPanel = document.getElementById("cartPanel");
+
+// 初始狀態關閉購物車
+cartPanel.classList.remove("open");
+
+toggleCartBtn.addEventListener("click", () => {
+    cartPanel.classList.toggle("open");
+});
