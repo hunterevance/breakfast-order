@@ -1,85 +1,120 @@
-const menu = [
-    { category: "飲料", name: "紅茶", price: 15},
-    { category: "飲料", name: "豆漿", price: 15},
-    { category: "蛋餅類", name: "起司蛋餅", price: 35},
-    { category: "蛋餅類", name: "培根蛋餅", price: 35},
-    { category: "吐司類", name: "火腿蛋吐司", price: 35},
-    { category: "吐司類", name: "花生吐司", price: 15}
-];
+const menu = document.getElementById("menu");
+const cartItems = document.getElementById("cartItems");
+const totalPrice = document.getElementById("totalPrice");
+const cartPanel = document.getElementById("cartPanel");
+const toggleCartBtn = document.getElementById("toggleCartBtn");
 
 let cart = [];
 
+const products = [
+    { name: "紅茶", price: 15, category: "飲料", options: ["大小", "溫度"] },
+    { name: "豆漿", price: 15, category: "飲料", options: ["大小", "溫度"] },
+    { name: "起司蛋餅", price: 35, category: "蛋餅類", Option: ["加辣"] },
+    { name: "培根蛋餅", price: 35, category: "蛋餅類", Option: ["加辣"] },
+    { name: "火腿蛋吐司", price: 35, category: "吐司類" },
+    { name: "花生吐司", price: 15, category: "吐司類" }
+];
+
 function renderMenu() {
-    const container = document.getElementById("menu-container");
-    container.innerHTML = " ";
+    menu.innerHTML = " ";
+    products.forEach((product, index) => {
+        const card = document.createElement("div");
+        card.className = "card";
 
-    const grouped = menu.reduce((acc, item) => {
-        if (!acc[item.category]) acc[item.category] = [];
-        acc[item.category].push(item);
-        return acc;
-    }, {});
+        const title = document.createElement("h3");
+        title.textContent = product.name;
 
-    for (const category in grouped) {
-        const section = document.createElement("section");
-        const heading = document.createElement("h2");
-        heading.textContent = category;
-        section.appendChild(heading);
+        const price = document.createElement("p");
+        price.textContent = `$${product.price}`;
+        
+        const quantity = document.createElement("input");
+        quantity.type = "number";
+        quantity.min = 1;
+        quantity.value =1;
 
-        grouped[category].forEach(item => {
-            const div = document.createElement("div");
-            div.className = "menu-item";
-            div.innerHTML = `
-                <h3>${item.name}</h3>
-                <p>$${item.price}</p>
-                <button onclick="addToCart('${item.name}', ${item.price})">加入購物車</button>
-            `;
-            section.appendChild(div);
-        });
+        const remark = document.createElement("input")
+        remark.placeholder = "備註";
 
-        container.appendChild(section);
-    }
+        const addBtn = document.createElement("button");
+        addBtn.textContent = "加入購物車";
+        addBtn.onclick = () => {
+            let item = {
+                name: product.name,
+                price: product.price,
+                quantity: parseInt(quantity.value),
+                options: {}
+            };
+
+            if (products.options) {
+                products.options.forEach(opt =>{
+                    const select = card.querySelector(`[data-opt='${opt}']`);
+                    if (select) item.options[opt] = select.value;
+                });
+            }
+
+            cart.push(item);
+            updateCart();
+        };
+
+        card.appendChild(title);
+        card.appendChild(price);
+
+        // 顯示選項
+        if (product.options) {
+            product.options.forEach(opt => {
+                const select = document.createElement("select");
+                select.setAttribute("data-opt", opt);
+                let opts = [];
+
+                if (opt === "加辣") opts = ["不加辣", "加辣"];
+                if (opt === "大小") opts = ["小杯", "大杯"];
+                if (opt === "溫度") opts = ["冰", "熱"];
+
+                opts.forEach(val => {
+                    const option = document.createElement("option");
+                    option.value = val;
+                    option.textContent = val;
+                    select.appendChild(option);
+                });
+
+                card.appendChild(select);
+            });
+        }
+
+        card.appendChild(quantity);
+        card.appendChild(remark);
+        card.appendChild(addBtn);
+
+        menu.appendChild(card);
+    });
 }
 
-function addToCart(name, price) {
-    const existing = cart.find(item => item.name === name);
-    if (existing) {
-        existing.qty += 1;
-    } else {
-        cart.push({ name, price, qty: 1 });
-    }
-    renderCart();
-}
-
-function renderCart() {
-    const ul = document.getElementById("cart-items");
-    ul.innerHTML = " ";
+function updateCart() {
+    cartItems.innerHTML = " ";
     let total = 0;
 
-    cart.forEach(item => {
+    cart.forEach((item, index) => {
         const li = document.createElement("li");
-        li.textContent = `${item.name} x${item.qty} = $${item.price * item.qty}`;
-        ul.appendChild(li);
-        total += item.price * item.qty;
+        const optionsStr = Object.entries(item.options).map(([K, v]) => `${k}:${v}`).join(", ");
+        li. textContent = `${item.name} x${item.quantity} $${item.price * item.quantity} ${item.remark}`;
+
+        const delBtn = document.createElement("button");
+        delBtn.textContent = "❌";
+        delBtn.onclick = () => {
+            cart.splice(index, 1);
+            updateCart();
+        };
+
+        li.appendChild(delBtn);
+        cartItems.appendChild(li);
+        total += item.price * item.quantity;
     });
 
-    document.getElementById("totalAmount").textContent = `總金額: $${total}`;
+    totalPrice.textContent = total;
 }
-
-function checkout() {
-    alert("訂單已送出!謝謝您的點餐");
-    cart = [];
-    renderCart();
-}
-
-renderMenu();
-
-const toggleCartBtn = document.getElementById("toggleCartBtn");
-const cartPanel = document.getElementById("cartPanel");
-
-// 初始狀態關閉購物車
-cartPanel.classList.remove("open");
 
 toggleCartBtn.addEventListener("click", () => {
     cartPanel.classList.toggle("open");
 });
 
+renderMenu();
