@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="zh-Hant">
+<html lang="zh-TW">
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
@@ -9,19 +9,20 @@
 <body>
     <header>
         <h1>早安!請點餐</h1>
-        <button id="toggleCartBtn" class="cart-toggle">🛒購物車</button>
     </header>
 
-    <main id="menu" class="menu-container"></main>
-        
-        <!-- 餐點卡片由 JavaScript 動態生成 -->
-        
-    <aside id="cartPanel" class="cart-panel">
+    <main id="menu-container">
+        <!-- JavaScript 動態插入菜單 -->
+    </main>
+
+    <button id="toggleCartBtn" class="cart-toggle">🛒購物車</button>
+
+    <div id="cartPanel" class="cart">
         <h2>購物車</h2>
-        <ul id="cartList"></ul>
-        <p>總金額: $<span id="totalPrice">0</span></p>
-        <button id="checkoutBtn">結帳</button>
-    </aside>
+        <ul id="cartItems"></ul>
+        <p>總金額: $<span id="totalAmount">0</span></p>
+        <button onclick="checkout()">結帳</button>
+    </div>
 
     <script src="script.js"></script>
 </body>
