@@ -24,6 +24,42 @@
         <button onclick="checkout()">結帳</button>
     </div>
 
+    <!-- 商品細項 Modal -->
+    <div id="itemModal" class="modal hidden">
+        <div class="modal-content">
+            <h2 id="modalItemName">品項設定</h2>
+
+            <label>數量:
+                <input type="number" id="itemQty" value="1" min="1">
+            </label>
+
+            <label>容量:
+                <select id="itemSize">
+                    <option value="小杯">小杯</option>
+                    <option value="中杯">中杯</option>
+                    <option value="大杯">大杯</option>
+                </select>
+            </label>
+
+            <label>溫度:
+                <select id="itemTemp">
+                    <option value="熱">熱</option>
+                    <option value="溫">溫</option>
+                    <option value="冰">冰</option>
+                </select>
+            </label>
+
+            <label>備註:
+                <input type="text" id="itemNote" placeholder="例如：少糖、不加冰">
+            </label>
+
+            <div class="modal-actions">
+                <button id="confirmAddBtn">加入購物車</button>
+                <button id="cancelBtn">取消</button>
+            </div>
+        </div>
+    </div>
+
     <script src="script.js"></script>
 </body>
 </html>

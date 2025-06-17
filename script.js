@@ -8,6 +8,7 @@ const menu = [
 ];
 
 let cart = [];
+let currentItem = null;
 
 function renderMenu() {
     const container = document.getElementById("menu-container");
@@ -31,7 +32,7 @@ function renderMenu() {
             div.innerHTML = `
                 <h3>${item.name}</h3>
                 <p>$${item.price}</p>
-                <button onclick="addToCart('${item.name}', ${item.price})">加入購物車</button>
+                <button onclick='openItemModal(${JSON.stringify(item)})'>加入購物車</button>
             `;
             section.appendChild(div);
         });
@@ -40,41 +41,67 @@ function renderMenu() {
     }
 }
 
-function addToCart(name, price) {
-    const existing = cart.find(item => item.name === name);
-    if (existing) {
-        existing.qty += 1;
-    } else {
-        cart.push({ name, price, qty: 1 });
-    }
-    renderCart();
+function openItemModal(item) {
+    currentItem = item;
+    document.getElementById("modalItemName").textContent = item.name;
+    document.getElementById("itemQty").value = 1;
+    document.getElementById("itemSize").value = "中杯";
+    document.getElementById("itemTemp").value = "溫";
+    document.getElementById("itemNote").value = "";
+    document.getElementById("itemModal").classList.remove("hidden");
 }
 
+function closeItemModal() {
+    document.getElementById("itemModal").classList.add("hidden");
+}
+
+document.getElementById("confirmAddBtn").addEventListener("click", () => {
+    const qty = parseInt(document.getElementById("itemQty").value);
+    const size = document.getElementById("itemSize").value;
+    const temp = document.getElementById("itemTemp").value;
+    const note = document.getElementById("itemNote").value;
+
+    cart.push({
+        name: currentItem.name,
+        price: currentItem.price,
+        qty,
+        options: { size, temperature: temp, note }
+    });
+
+    closeItemModal();
+    renderCart();
+});
+
+document.getElementById("cancelBtn").addEventListener("click", closeItemModal);
+
 function renderCart() {
-    const ul = document.getElementById("cart-items");
+    const ul = document.getElementById("cartItems");
     ul.innerHTML = " ";
     let total = 0;
 
     cart.forEach(item => {
         const li = document.createElement("li");
         li.textContent = `${item.name} x${item.qty} = $${item.price * item.qty}`;
+        if (item.options) {
+            li.textContent += ` (${item.options.size}, ${item.options.temperature}${item.options.note ? ", 備註: " + item.options.note : ""})`;
+        }
         ul.appendChild(li);
         total += item.price * item.qty;
     });
 
-    document.getElementById("totalAmount").textContent = `總金額: $${total}`;
+    document.getElementById("totalAmount").textContent = total;
 }
 
 function checkout() {
     alert("訂單已送出!謝謝您的點餐");
     cart = [];
     renderCart();
+    document.getElementById("cartPanel").classList.remove("open");
 }
 
 const toggleCartBtn = document.getElementById("toggleCartBtn");
 const cartPanel = document.getElementById("cartPanel");
 
-// 初始狀態關閉購物車
 cartPanel.classList.remove("open");
 
 toggleCartBtn.addEventListener("click", (e) => {
@@ -82,11 +109,11 @@ toggleCartBtn.addEventListener("click", (e) => {
     cartPanel.classList.toggle("open");
 });
 
-cartPanel.addEventListener("click",(e) => {
+cartPanel.addEventListener("click", (e) => {
     e.stopPropagation();
 });
 
-document.addEventListener("click",() => {
+document.addEventListener("click", () => {
     cartPanel.classList.remove("open");
 });
 
